@@ -45,19 +45,23 @@ If your BigBlueButton server is connected to https://createwebinar.com contol pa
 3. Go to OAuth consent screen and configure according to your preferences
 4. Go to Credentials screen, click Create Credentials button and select OAuth client ID
 5. Choose "Other" for credential type and give it a name, then click Create. A dialogue box will appear with your new client ID and client secret keys.
-6. Next, go back to your server terminal and do the following: ```
+6. Next, go back to your server terminal and do the following:
+```
 cp ~/bbb-download/src/client_secrets.json /usr/local/bigbluebutton/core/scripts/post_publish/
 ```
 7. Now edit file client_secrets.json in /usr/local/bigbluebutton/core/scripts/post_publish/ using the client ID and client secret from step 5
-8. Run:```
+8. Run:
+```
 chown bigbluebutton:bigbluebutton /usr/local/bigbluebutton/core/scripts/post_publish/*.json
 ```
-9. Run: ```
+9. Run:
+```
 /usr/bin/python /usr/local/bigbluebutton/core/scripts/post_publish/upload.py
 ```
  -> this will return a long URL. Copy and paste the URL into your browser, go through the Google Authorization process, then copy and paste the code it returns back into your terminal.
 10. Check that files client_secret.json and upload.py are in both in "/usr/local/bigbluebutton/core/scripts/post_publish/"
-11. Run: ```
+11. Run:
+```
 chown bigbluebutton:bigbluebutton /usr/local/bigbluebutton/core/scripts/post_publish/*.json
 ```
 . . . once again.
