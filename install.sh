@@ -8,8 +8,13 @@ then
     exit 1
 fi
 
-# Install python
+# Install python and pip
 apt-get install -y python
+apt-get install -y python-pip
+
+#install google api python client 
+pip install --upgrade google-api-python-client
+pip install oauth2client
 
 # Install additional libs need to convertation process
 apt-get install -y curl libsdl2-mixer-2.0-0 libsdl2-image-2.0-0 libsdl2-2.0-0 libva-x11-1 libva-drm1 libfdk-aac-dev
@@ -19,6 +24,8 @@ mkdir -p /opt/ffmpeg
 cp ffmpeg/* /opt/ffmpeg
 chmod 755 /opt/ffmpeg/ffmpeg
 chmod 755 /usr/local/bigbluebutton/core/scripts/post_publish/*
+
+
 
 #Set up NGINX to make MP4 files available for createwebinar.com
 mkdir /var/www/bigbluebutton-default/download
@@ -32,6 +39,11 @@ chmod -R go+rw /var/log/bigbluebutton/download/
 
 # Copy python scripts to post_publish directory
 cp src/*.py /usr/local/bigbluebutton/core/scripts/post_publish
+
+
+# Copy python scripts to post_publish directory
+cp src/*.json /usr/local/bigbluebutton/core/scripts/post_publish
+chown bigbluebutton:bigbluebutton /usr/local/bigbluebutton/core/scripts/post_publish/*.json
 
 # Copy ruby script that controlls the download process
 cp src/*.rb /usr/local/bigbluebutton/core/scripts/post_publish

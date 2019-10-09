@@ -16,17 +16,16 @@ Final MP4 video will include only presentation, audio and screenshare (no chat w
 ```
 git clone https://github.com/createwebinar/bbb-download.git
 cd bbb-download
-chmod u+x install.sh 
+chmod u+x install.sh
 sudo ./install.sh
-# To convert all of your current recordings to MP4 format use command:
-sudo bbb-record --rebuildall
+
 ```
 
 
-This copies the download scripts to the BigBlueButton scripts folder, and copies compiled FFMPEG to the /opt/ffmpeg folder. 
+This copies the download scripts to the BigBlueButton scripts folder, and copies compiled FFMPEG to the /opt/ffmpeg folder.
 It also installs python2.7 and additional libs and give an appropriate rights for MP4 files to make them available for download.
 
-NOTE: You may use the guide [here](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) to compile ffmpeg in Ubuntu by your own. Be sure to include the following flags. 
+NOTE: You may use the guide [here](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) to compile ffmpeg in Ubuntu by your own. Be sure to include the following flags.
 ```
 --enable-version3 --enable-postproc --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libmp3lame --enable-libfdk-aac --enable-gpl --enable-nonfree''
 ```
@@ -39,3 +38,30 @@ Final MP4 video will include only presentation, audio and screenshare (no chat w
 
 Link to download MP4 file will look like this: https://yourBBBserverURL/download/presentation/{meetingID}/{meetingID}.mp4
 If your BigBlueButton server is connected to https://createwebinar.com contol panel, all webinar participants will be able to download the recorded webinars from the website in one click.
+
+####### Setup Automatic MP4 Recording to Youtube Channel ########
+1. Login to https://console.developers.google.com and create a new project
+2. Enable the Google Youtube API from your developer console (version 3 as of this writing)
+3. Go to OAuth consent screen and configure according to your preferences
+4. Go to Credentials screen, click Create Credentials button and select OAuth client ID
+5. Choose "Other" for credential type and give it a name, then click Create. A dialogue box will appear with your new client ID and client secret keys.
+6. Next, go back to your server terminal and do the following: ```
+cp ~/bbb-download/src/client_secrets.json /usr/local/bigbluebutton/core/scripts/post_publish/
+```
+7. Now edit file client_secrets.json in /usr/local/bigbluebutton/core/scripts/post_publish/ using the client ID and client secret from step 5
+8. Run:```
+chown bigbluebutton:bigbluebutton /usr/local/bigbluebutton/core/scripts/post_publish/*.json
+```
+9. Run: ```
+/usr/bin/python /usr/local/bigbluebutton/core/scripts/post_publish/upload.py
+```
+ -> this will return a long URL. Copy and paste the URL into your browser, go through the Google Authorization process, then copy and paste the code it returns back into your terminal.
+10. Check that files client_secret.json and upload.py are in both in "/usr/local/bigbluebutton/core/scripts/post_publish/"
+11. Run: ```
+chown bigbluebutton:bigbluebutton /usr/local/bigbluebutton/core/scripts/post_publish/*.json
+```
+. . . once again.
+
+#At this point, all new mp4 recordings will automatically be uploaded to the Youtube channel that you selected during the authorization process. Processing and upload time can take up to an hour depending on recording length plus your server performance profile and your upload capacity.
+
+# To re-upload any current videos on your youtube channel, delete file in /var/bigbluebutton/recording/status/youtube/#{meeting_id}-youtube.done
