@@ -49,7 +49,9 @@ If your BigBlueButton server is connected to https://createwebinar.com contol pa
 ```
 cp ~/bbb-download/src/client_secrets.json /usr/local/bigbluebutton/core/scripts/post_publish/
 ```
+
 7. Now edit file client_secrets.json in /usr/local/bigbluebutton/core/scripts/post_publish/ using the client ID and client secret from step 5
+
 8. Run:
 ```
 chown bigbluebutton:bigbluebutton /usr/local/bigbluebutton/core/scripts/post_publish/*.json
@@ -59,13 +61,16 @@ chown bigbluebutton:bigbluebutton /usr/local/bigbluebutton/core/scripts/post_pub
 /usr/bin/python /usr/local/bigbluebutton/core/scripts/post_publish/upload.py
 ```
  -> this will return a long URL. Copy and paste the URL into your browser, go through the Google Authorization process, then copy and paste the code it returns back into your terminal.
+
 10. Check that files client_secret.json and upload.py are in both in "/usr/local/bigbluebutton/core/scripts/post_publish/"
+
 11. Run:
 ```
 chown bigbluebutton:bigbluebutton /usr/local/bigbluebutton/core/scripts/post_publish/*.json
 ```
 . . . once again.
 
-#At this point, all new mp4 recordings will automatically be uploaded to the Youtube channel that you selected during the authorization process. Processing and upload time can take up to an hour depending on recording length plus your server performance profile and your upload capacity.
+##Notes
+1. At this point, all new mp4 recordings will automatically be uploaded to the Youtube channel that you selected during the authorization process. Processing and upload time can take up to an hour depending on recording length plus your server performance profile and your upload capacity.
 
-# To re-upload any current videos on your youtube channel, delete file in /var/bigbluebutton/recording/status/youtube/#{meeting_id}-youtube.done
+2. To re-upload any current videos on your youtube channel, delete the file reference in /var/bigbluebutton/recording/status/youtube/#{meeting_id}-youtube.done
