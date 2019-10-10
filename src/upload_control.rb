@@ -35,11 +35,11 @@ BigBlueButton.logger = logger
 published_files = "/var/bigbluebutton/published/presentation/#{meeting_id}"
 meeting_metadata = BigBlueButton::Events.get_meeting_metadata("/var/bigbluebutton/recording/raw/#{meeting_id}/events.xml")
 
-#
-# This runs the download script
-#
-download_status = system("/usr/bin/python /usr/local/bigbluebutton/core/scripts/post_publish/download.py #{meeting_id}")
 
+#
+# This runs the upload script
+#
+download_status = system("/usr/bin/python /usr/local/bigbluebutton/core/scripts/post_publish/upload.py --meetingid #{meeting_id}")
 
 
 

@@ -28,7 +28,8 @@ LOGS = '/var/log/bigbluebutton/download/'
 source_dir = PATH + meetingId + "/"
 temp_dir = source_dir + 'temp/'
 target_dir = source_dir + 'download/'
-audio_path = 'audio/'
+#audio_path = 'audio/'
+audio_path = temp_dir + 'audio/'
 events_file = 'shapes.svg'
 LOGFILE = LOGS + meetingId + '.log'
 ffmpeg.set_logfile(LOGFILE)
@@ -175,9 +176,9 @@ def prepare(bbb_version):
 
     if not os.path.exists('audio'):
         global audio_path
-        audio_path = temp_dir + 'audio/'
+        #audio_path = temp_dir + 'audio/'
         os.mkdir(audio_path)
-        ffmpeg.extract_audio_from_video('video/webcams.webm', audio_path + 'audio.ogg')
+        ffmpeg.extract_audio_from_video(source_dir + 'video/webcams.webm', audio_path + 'audio.ogg')
 
     shutil.copytree("presentation", temp_dir + "presentation")
     dictionary, length = extract_timings(bbb_version)
@@ -263,21 +264,21 @@ def main():
     print >> sys.stderr, "bbb_version: " + bbb_version
 
     os.chdir(source_dir)
-
-    dictionary, length, dims = prepare(bbb_version)
-
-    audio = audio_path + 'audio.ogg'
-    audio_trimmed = temp_dir + 'audio_trimmed.m4a'
-    result = target_dir + 'meeting.mp4'
-    slideshow = temp_dir + 'slideshow.mp4'
+    cleanup()
+    # dictionary, length, dims = prepare(bbb_version)
+    # audio = audio_path + 'audio.ogg'
+    # audio_trimmed = temp_dir + 'audio_trimmed.m4a'
+    # result = target_dir + 'meeting.mp4'
+    # slideshow = temp_dir + 'slideshow.mp4'
 
     try:
-        create_slideshow(dictionary, length, slideshow, bbb_version)
-        ffmpeg.trim_audio_start(dictionary, length, audio, audio_trimmed)
-        ffmpeg.mux_slideshow_audio(slideshow, audio_trimmed, result)
-        serve_webcams()
+        # create_slideshow(dictionary, length, slideshow, bbb_version)
+        # ffmpeg.trim_audio_start(dictionary, length, audio, audio_trimmed)
+        # ffmpeg.mux_slideshow_audio(slideshow, audio_trimmed, result)
+        # serve_webcams()
         # zipdir('./download/')
-        copy_mp4(result, source_dir + meetingId + '.mp4')
+        # copy_mp4(result, source_dir + meetingId + '.mp4')
+        ffmpeg.webm_to_mp4(source_dir + "video/webcams.webm",source_dir + meetingId + '.mp4')
     finally:
         print >> sys.stderr, "Cleaning up temp files..."
         cleanup()

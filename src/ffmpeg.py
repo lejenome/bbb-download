@@ -4,8 +4,8 @@ __author__ = 'CreateWebinar.com'
 import os
 import shutil
 
-# FFMPEG = 'ffmpeg'
-FFMPEG = '/opt/ffmpeg/ffmpeg'
+FFMPEG = 'ffmpeg'
+#FFMPEG = '/opt/ffmpeg/ffmpeg'
 # FFMPEG = '/root/bin/ffmpeg'
 VID_ENCODER = 'libx264'
 
