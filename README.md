@@ -38,7 +38,7 @@ Final MP4 video will include only presentation, audio and screenshare (no chat w
 Link to download MP4 file will look like this: https://yourBBBserverURL/download/presentation/{meetingID}/{meetingID}.mp4
 If your BigBlueButton server is connected to https://createwebinar.com contol panel, all webinar participants will be able to download the recorded webinars from the website in one click.
 
-## Setup Automatic MP4 Recording to Youtube Channel
+## Setup Automatic Upload of MP4 Recording to Youtube Channel
 1. Login to https://console.developers.google.com and create a new project
 2. Enable the Google Youtube API from your developer console (version 3 as of this writing)
 3. Go to OAuth consent screen and configure according to your preferences
