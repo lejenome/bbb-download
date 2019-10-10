@@ -1,5 +1,4 @@
 # bbb-download
-### The code will be maintained by createwebinar.com developer team
 
 A python script that produces downloadable material for existing and new recordings for your BigBlueButton server.
 Final MP4 video will include only presentation, audio and screenshare (no chat window, no whiteboard).
@@ -14,7 +13,7 @@ Final MP4 video will include only presentation, audio and screenshare (no chat w
 
 ## Installation (need to be root)
 ```
-git clone https://github.com/createwebinar/bbb-download.git
+git clone https://github.com/ruess/bbb-download.git
 cd bbb-download
 chmod u+x install.sh
 sudo ./install.sh
