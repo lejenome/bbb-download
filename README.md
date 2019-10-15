@@ -16,6 +16,7 @@ Final MP4 video will include only presentation, audio and screenshare (no chat w
 git clone https://github.com/ruess/bbb-download.git
 cd bbb-download
 chmod u+x install.sh
+sed -i -e 's/\r$//' install.sh
 sudo ./install.sh
 
 ```
