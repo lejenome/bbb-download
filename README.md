@@ -1,7 +1,7 @@
 # bbb-download
 
 A python script that produces downloadable material for existing and new recordings for your BigBlueButton server.
-Final MP4 video will include only presentation, audio and screenshare (no chat window, no whiteboard).
+Final MP4 video will include only webcams, audio and screenshares (no presentation, no chat window, no whiteboard).
 - BigBlueButton 2.0 is supported (10.08.2018)
 - Screenshare supported (18.09.2018)
 - BigBlueButton 2.2 is supported (tested with BBB 2.2 beta 8)
