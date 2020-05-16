@@ -75,7 +75,7 @@ def create_slideshow(dictionary, length, result, bbb_version):
 
     ffmpeg.webm_to_mp4(SOURCE_DESKSHARE, TMP_DESKSHARE_FILE)
 
-    print >> sys.stderr, "-=create_slideshow=-"
+    print("-=create_slideshow=-", file=sys.stderr)
     for i, t in enumerate(times):
         # print >> sys.stderr, (i, t)
 
@@ -95,11 +95,11 @@ def create_slideshow(dictionary, length, result, bbb_version):
         out_ts_file = temp_dir + tmp_ts_name
 
         if "deskshare.png" in image:
-            print >> sys.stderr, (0, i, t, duration)
+            print(0, i, t, duration, file=sys.stderr)
             ffmpeg.trim_video_by_seconds(TMP_DESKSHARE_FILE, t, duration, out_file)
             ffmpeg.mp4_to_ts(out_file, out_ts_file)
         else:
-            print >> sys.stderr, (1, i, t, duration)
+            print(1, i, t, duration, file=sys.stderr)
             ffmpeg.create_video_from_image(image, duration, out_ts_file)
 
         f.write('file ' + out_ts_file + '\n')
@@ -183,22 +183,22 @@ def prepare(bbb_version):
     shutil.copytree("presentation", temp_dir + "presentation")
     dictionary, length = extract_timings(bbb_version)
     # debug
-    print >> sys.stderr, "dictionary"
-    print >> sys.stderr, (dictionary)
-    print >> sys.stderr, "length"
-    print >> sys.stderr, (length)
+    print("dictionary", file=sys.stderr)
+    print(dictionary, file=sys.stderr)
+    print("length", file=sys.stderr)
+    print(length, file=sys.stderr)
     dims = get_different_presentations(dictionary)
     # debug
-    print >> sys.stderr, "dims"
-    print >> sys.stderr, (dims)
+    print("dims", file=sys.stderr)
+    print(dims, file=sys.stderr)
     check_presentation_dims(dictionary, dims, bbb_version)
     return dictionary, length, dims
 
 
 def get_different_presentations(dictionary):
     times = dictionary.keys()
-    print >> sys.stderr, "times"
-    print >> sys.stderr, (times)
+    print("times", file=sys.stderr)
+    print(times, file=sys.stderr)
     presentations = []
     dims = {}
     for t in times:
@@ -207,8 +207,8 @@ def get_different_presentations(dictionary):
 
         name = dictionary[t].split("/")[7]
         # debug
-        print >> sys.stderr, "name"
-        print >> sys.stderr, (name)
+        print("name", file=sys.stderr)
+        print(name, file=sys.stderr)
         if name not in presentations:
             presentations.append(name)
             dims[name] = get_presentation_dims(name)
@@ -258,10 +258,10 @@ def bbbversion():
 
 def main():
     sys.stderr = open(LOGFILE, 'a')
-    print >> sys.stderr, "\n<-------------------" + time.strftime("%c") + "----------------------->\n"
+    print("\n<-------------------" + time.strftime("%c") + "----------------------->\n", file=sys.stderr)
 
     bbb_version = bbbversion()
-    print >> sys.stderr, "bbb_version: " + bbb_version
+    print("bbb_version: " + bbb_version, file=sys.stderr)
 
     os.chdir(source_dir)
     cleanup()
@@ -280,9 +280,9 @@ def main():
         # copy_mp4(result, source_dir + meetingId + '.mp4')
         ffmpeg.webm_to_mp4(source_dir + "video/webcams.webm",source_dir + meetingId + '.mp4')
     finally:
-        print >> sys.stderr, "Cleaning up temp files..."
+        print("Cleaning up temp files...", file=sys.stderr)
         cleanup()
-        print >> sys.stderr, "Done"
+        print("Done", file=sys.stderr)
 
 
 if __name__ == "__main__":

@@ -125,10 +125,10 @@ def resumable_upload(insert_request):
   retry = 0
   while response is None:
     try:
-      print "Uploading file..."
+      print("Uploading file...")
       status, response = insert_request.next_chunk()
       if 'id' in response:
-        print "Video id '%s' was successfully uploaded." % response['id']
+        print("Video id '%s' was successfully uploaded." % response['id'])
       else:
         exit("The upload failed with an unexpected response: %s" % response)
     except HttpError, e:
@@ -141,14 +141,14 @@ def resumable_upload(insert_request):
       error = "A retriable error occurred: %s" % e
 
     if error is not None:
-      print error
+      print(error)
       retry += 1
       if retry > MAX_RETRIES:
         exit("No longer attempting to retry.")
 
       max_sleep = 2 ** retry
       sleep_seconds = random.random() * max_sleep
-      print "Sleeping %f seconds and then retrying..." % sleep_seconds
+      print("Sleeping %f seconds and then retrying..." % sleep_seconds)
       time.sleep(sleep_seconds)
 
 def args_variable(FILE_NAME, TITLE_NAME):
@@ -201,7 +201,7 @@ if __name__ == '__main__':
   oauth2_path = "/usr/local/bigbluebutton/core/scripts/post_publish/upload.py-oauth2.json"
   if not os.path.exists(oauth2_path):
     youtube = get_authenticated_service(args)
-    print "Get authorization from Google sucessful."
+    print("Get authorization from Google sucessful.")
   else:
     if get_status_upload(args.meetingid):
       youtube = get_authenticated_service(args)
@@ -210,6 +210,6 @@ if __name__ == '__main__':
         initialize_upload(youtube, args_variable(file_url_videos, args.meetingid))
         create_status_upload_youtube(args.meetingid)
       except HttpError, e:
-        print "An HTTP error %d occurred:\n%s" % (e.resp.status, e.content)
+        print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
     else:
-      print "Meeting %s uploaded to youtube !" % (args.meetingid)
+      print("Meeting %s uploaded to youtube !" % (args.meetingid))

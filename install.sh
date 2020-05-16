@@ -3,7 +3,7 @@
 # Check if we are root
 uid=$(id -u)
 if [ $uid -ne 0 ]
-then 
+then
     echo "Please run as root"
     exit 1
 fi
@@ -12,7 +12,7 @@ fi
 apt-get install -y python
 apt-get install -y python-pip
 
-#install google api python client 
+#install google api python client
 pip install --upgrade google-api-python-client
 pip install oauth2client
 
@@ -20,9 +20,9 @@ pip install oauth2client
 apt-get install -y curl libsdl2-mixer-2.0-0 libsdl2-image-2.0-0 libsdl2-2.0-0 libva-x11-1 libva-drm1 libfdk-aac-dev
 
 # Copy ffmpeg to /opt/ffmpeg folder
-mkdir -p /opt/ffmpeg
-cp ffmpeg/* /opt/ffmpeg
-chmod 755 /opt/ffmpeg/ffmpeg
+#mkdir -p /opt/ffmpeg
+#cp ffmpeg/* /opt/ffmpeg
+#chmod 755 /opt/ffmpeg/ffmpeg
 chmod 755 /usr/local/bigbluebutton/core/scripts/post_publish/*
 
 
