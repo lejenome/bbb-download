@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 __author__ = 'CreateWebinar.com'
 __email__ = 'support@createwebinar.com'
 
@@ -70,8 +72,7 @@ def create_slideshow(dictionary, length, result, bbb_version):
     video_list = 'video_list.txt'
     f = open(video_list, 'w')
 
-    times = dictionary.keys()
-    times.sort()
+    times = sorted(dictionary.keys())
 
     ffmpeg.webm_to_mp4(SOURCE_DESKSHARE, TMP_DESKSHARE_FILE)
 
@@ -123,8 +124,7 @@ def get_presentation_dims(presentation_name):
 
 
 def rescale_presentation(new_height, new_width, dictionary, bbb_version):
-    times = dictionary.keys()
-    times.sort()
+    times = sorted(dictionary.keys())
     for i, t in enumerate(times):
         # ?
         #print >> sys.stderr, "_rescale_presentation_"
@@ -216,11 +216,11 @@ def get_different_presentations(dictionary):
     return dims
 
 
-def cleanup():
+def cleanup(clean_all=False):
     if os.path.exists(temp_dir):
         shutil.rmtree(temp_dir)
 
-    if os.path.exists(target_dir):
+    if clean_all and os.path.exists(target_dir):
         shutil.rmtree(target_dir)
 
 
@@ -265,20 +265,20 @@ def main():
 
     os.chdir(source_dir)
     cleanup()
-    # dictionary, length, dims = prepare(bbb_version)
-    # audio = audio_path + 'audio.ogg'
-    # audio_trimmed = temp_dir + 'audio_trimmed.m4a'
-    # result = target_dir + 'meeting.mp4'
-    # slideshow = temp_dir + 'slideshow.mp4'
+    dictionary, length, dims = prepare(bbb_version)
+    audio = audio_path + 'audio.ogg'
+    audio_trimmed = temp_dir + 'audio_trimmed.m4a'
+    result = target_dir + 'meeting.mp4'
+    slideshow = temp_dir + 'slideshow.mp4'
 
     try:
-        # create_slideshow(dictionary, length, slideshow, bbb_version)
-        # ffmpeg.trim_audio_start(dictionary, length, audio, audio_trimmed)
-        # ffmpeg.mux_slideshow_audio(slideshow, audio_trimmed, result)
-        # serve_webcams()
+        create_slideshow(dictionary, length, slideshow, bbb_version)
+        ffmpeg.trim_audio_start(dictionary, length, audio, audio_trimmed)
+        ffmpeg.mux_slideshow_audio(slideshow, audio_trimmed, result)
+        serve_webcams()
         # zipdir('./download/')
-        # copy_mp4(result, source_dir + meetingId + '.mp4')
-        ffmpeg.webm_to_mp4(source_dir + "video/webcams.webm",source_dir + meetingId + '.mp4')
+        copy_mp4(result, source_dir + meetingId + '.mp4')
+        # ffmpeg.webm_to_mp4(source_dir + "video/webcams.webm",source_dir + meetingId + '.mp4')
     finally:
         print("Cleaning up temp files...", file=sys.stderr)
         cleanup()
