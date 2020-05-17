@@ -29,7 +29,7 @@ chmod 755 /usr/local/bigbluebutton/core/scripts/post_publish/*
 
 #Set up NGINX to make MP4 files available for createwebinar.com
 mkdir -p /var/www/bigbluebutton-default/download
-ln -s /var/bigbluebutton/published/presentation /var/www/bigbluebutton-default/download
+ln -s -f /var/bigbluebutton/published/presentation /var/www/bigbluebutton-default/download
 chmod 0755 /var/bigbluebutton/published/presentation
 
 # Create log directory
