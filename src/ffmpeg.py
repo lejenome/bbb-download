@@ -17,7 +17,7 @@ def set_logfile(file):
 
 
 def ffmpeg(command):
-    command = '%s -nostats -hide_banner %s' % (FFMPEG, command)
+    command = '%s -hide_banner -nostats %s' % (FFMPEG, command)
     fn_name = inspect.stack()[1].function
     print("[CMD:%s] %s" % (fn_name, command), file=sys.stderr)
     if logfile:
@@ -38,7 +38,7 @@ def create_video_from_image(image, duration, out_file):
     print("*************** create_video_from_image ******************")
     print(image, "\n", duration, "\n", out_file)
     ffmpeg(
-        '-y -loop 1 -r 5 -f image2 -i %s -c:v %s -t %s -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" %s'
+        '-y -loop 1 -r 5 -f image2 -i %s -c:v %s -tune stillimage -t %s -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" %s'
         % (image, VID_ENCODER, duration, out_file))
 
 

@@ -28,13 +28,13 @@ chmod 755 /usr/local/bigbluebutton/core/scripts/post_publish/*
 
 
 #Set up NGINX to make MP4 files available for createwebinar.com
-mkdir /var/www/bigbluebutton-default/download
+mkdir -p /var/www/bigbluebutton-default/download
 ln -s /var/bigbluebutton/published/presentation /var/www/bigbluebutton-default/download
 chmod 0755 /var/bigbluebutton/published/presentation
 
 # Create log directory
 mkdir -p /var/log/bigbluebutton/download
-chown tomcat7:tomcat7 /var/log/bigbluebutton/download
+chown bigbluebutton:bigbluebutton /var/log/bigbluebutton/download
 chmod -R go+rw /var/log/bigbluebutton/download/
 
 # Copy python scripts to post_publish directory

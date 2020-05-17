@@ -71,8 +71,8 @@ class Meeting:
 
             in_times = str(image.getAttribute('in')).split()
             out_times = image.getAttribute('out').split()
-            height = int(image.getAttribute('height'))
-            width = int(image.getAttribute('width'))
+            height = int(float(image.getAttribute('height')))
+            width = int(float(image.getAttribute('width')))
 
             occurrences = len(in_times)
             for i in range(occurrences):
@@ -84,6 +84,7 @@ class Meeting:
                     'width': width,
                     'in': float(in_times[i]),
                     'out': float(out_times[i]),
+                    'duration': float(out_times[i]) - float(in_times[i]),
                 })
 
         slides.sort(key=itemgetter('in'))
@@ -132,7 +133,7 @@ class MeetingConverter:
             tmp_ts_name = '%d.ts' % i
             image = slide['full_path']
 
-            duration = slide['out'] - slide['in']
+            duration = slide['duration']
 
             out_file = self.meeting.temp_dir / tmp_name
             out_ts_file = self.meeting.temp_dir / tmp_ts_name
