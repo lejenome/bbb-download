@@ -4,10 +4,12 @@ __author__ = 'CreateWebinar.com'
 import os
 import sys
 import shutil
+import inspect
 
 FFMPEG = 'ffmpeg'
 VID_ENCODER = 'libx264'
 
+logfile = None
 
 def set_logfile(file):
     global logfile
@@ -15,8 +17,11 @@ def set_logfile(file):
 
 
 def ffmpeg(command):
-    command = '%s %s 2>> %s' % (FFMPEG, command, logfile)
-    print("[CMD]", command, file=sys.stderr)
+    command = '%s -nostats -hide_banner %s' % (FFMPEG, command)
+    fn_name = inspect.stack()[1].function
+    print("[CMD:%s] %s" % (fn_name, command), file=sys.stderr)
+    if logfile:
+        command = '%s 2>> %s' % (command, logfile)
     os.system(command)
 
 
@@ -33,14 +38,12 @@ def create_video_from_image(image, duration, out_file):
     print("*************** create_video_from_image ******************")
     print(image, "\n", duration, "\n", out_file)
     ffmpeg(
-        '-loop 1 -r 5 -f image2 -i %s -c:v %s -t %s -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" %s'
+        '-y -loop 1 -r 5 -f image2 -i %s -c:v %s -t %s -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" %s'
         % (image, VID_ENCODER, duration, out_file))
 
 
 def concat_videos(video_list, out_file):
-    command = '-f concat -safe 0 -i %s -c copy %s' % (video_list, out_file)
-    print("[CMD]", command, file=sys.stderr)
-    os.system(command)
+    ffmpeg('-y -f concat -safe 0 -i %s -c copy %s' % (video_list, out_file))
 
 
 def mp4_to_ts(input, output):
@@ -104,11 +107,11 @@ def trim_audio_start(time, length, full_audio, audio_trimmed):
 
 
 def mp3_to_aac(mp3_file, aac_file):
-    ffmpeg('-i %s -c:a aac %s' % (mp3_file, aac_file))
+    ffmpeg('-y -i %s -c:a aac %s' % (mp3_file, aac_file))
 
 
 def webm_to_mp4(webm_file, mp4_file):
-    ffmpeg('-i %s -qscale 0 %s' % (webm_file, mp4_file))
+    ffmpeg('-y -i %s -qscale 0 %s' % (webm_file, mp4_file))
 
 
 def audio_to_video(audio_file, image_file, video_file):

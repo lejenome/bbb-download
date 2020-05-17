@@ -33,18 +33,17 @@ class Meeting:
         self.source_dir = presentation_path / self.meetingId
         self.temp_dir = self.source_dir / 'temp'
         self.target_dir = self.source_dir / 'download'
-        self.audio_path = self.temp_dir / 'audio'
         self.events_file = self.source_dir / 'shapes.svg'
         self.log_file = download_path / (self.meetingId + '.log')
         self.source_events = raw_path / self.meetingId / 'events.xml'
         self.deskshare_src_file = self.source_dir / 'deskshare' / 'deskshare.webm'
         self.deskshare_tmp_file = self.temp_dir / 'deskshare.mp4'
-        self.events_doc = minidom.parse(self.events_file)
+        self.events_doc = minidom.parse(str(self.events_file))
 
-        self.audio_file = self.audio_path + 'audio.ogg'
-        self.audio_trimmed = self.temp_dir + 'audio_trimmed.m4a'
-        self.result_file = self.target_dir + 'meeting.mp4'
-        self.slideshow_file = self.temp_dir + 'slideshow.mp4'
+        self.audio_file = self.temp_dir / 'audio' / 'audio.ogg'
+        self.audio_trimmed = self.temp_dir / 'audio_trimmed.m4a'
+        self.result_file = self.target_dir / 'meeting.mp4'
+        self.slideshow_file = self.temp_dir / 'slideshow.mp4'
 
         self.bbb_version = self.get_bbbversion()
         self.process_slides()
@@ -98,11 +97,14 @@ class MeetingConverter:
 
     def start(self):
         ffmpeg.set_logfile(str(self.meeting.log_file))
+        os.chdir(str(self.meeting.source_dir))
+        self.prepare()
         self.create_slideshow()
-        ffmpeg.trim_audio_start(self.meeting.slides[0]['in'],
-                                self.meeting.total_length,
-                                self.meeting.audio_file,
-                                self.meeting.audio_trimmed)
+        if not self.meeting.audio_trimmed.exists():
+            ffmpeg.trim_audio_start(self.meeting.slides[0]['in'],
+                                    self.meeting.total_length,
+                                    self.meeting.audio_file,
+                                    self.meeting.audio_trimmed)
         ffmpeg.mux_slideshow_audio(self.meeting.slideshow_file,
                                    self.meeting.audio_trimmed,
                                    self.meeting.result_file)
@@ -119,7 +121,7 @@ class MeetingConverter:
             shutil.rmtree(str(self.meeting.target_dir))
 
     def create_slideshow(self):
-        video_list = self.meeting.source_path / 'video_list.txt'
+        video_list = self.meeting.source_dir / 'video_list.txt'
         f = video_list.open('w')
         ffmpeg.webm_to_mp4(self.meeting.deskshare_src_file,
                            self.meeting.deskshare_tmp_file)
@@ -135,7 +137,7 @@ class MeetingConverter:
             out_file = self.meeting.temp_dir / tmp_name
             out_ts_file = self.meeting.temp_dir / tmp_ts_name
 
-            if "deskshare.png" in image:
+            if "deskshare.png" == image.name:
                 print(0, i, slide['in'], duration, file=sys.stderr)
                 ffmpeg.trim_video_by_seconds(self.meeting.deskshare_tmp_file,
                                              slide['in'], duration, out_file)
@@ -144,10 +146,10 @@ class MeetingConverter:
                 print(1, i, slide['in'], duration, file=sys.stderr)
                 ffmpeg.create_video_from_image(image, duration, out_ts_file)
 
-            f.write('file ' + out_ts_file + '\n')
+            f.write('file ' + str(out_ts_file) + '\n')
         f.close()
 
-        ffmpeg.concat_videos(video_list, self.meeting.result_file)
+        ffmpeg.concat_videos(video_list, self.meeting.slideshow_file)
         video_list.unlink()
 
     def rescale_presentation(self, new_height, new_width):
@@ -167,31 +169,34 @@ class MeetingConverter:
         self.rescale_presentation(height, width)
 
     def prepare(self):
-        self.meeting.target_dir.mkdir(parents=True, exists_ok=True)
-        self.meeting.temp_dir.mkdir(parents=True, exists_ok=True)
-        self.meeting.audio_path.mkdir(parents=True, exists_ok=True)
+        self.meeting.target_dir.mkdir(parents=True, exist_ok=True)
+        self.meeting.temp_dir.mkdir(parents=True, exist_ok=True)
+        self.meeting.audio_file.parent.mkdir(parents=True, exist_ok=True)
 
         if not self.meeting.audio_file.exists():
             ffmpeg.extract_audio_from_video(
                 self.meeting.source_dir / 'video' / 'webcams.webm',
                 self.meeting.audio_file)
 
+        shutil.rmtree(str(self.meeting.temp_dir / "presentation"),
+                      ignore_errors=True)
         shutil.copytree(
-            self.meeting.source_path / 'presentation',
-            self.meeting.temp_dir / "presentation",
+            str(self.meeting.source_dir / 'presentation'),
+            str(self.meeting.temp_dir / "presentation"),
         )
 
         self.check_presentation_dims()
 
     def serve_webcams(self):
-        webcams = self.meeting.source_path / 'video' / 'webcams.webm'
+        webcams = self.meeting.source_dir / 'video' / 'webcams.webm'
         if webcams.exists():
-            shutil.copy2(webcams, self.meeting.source_path / 'download')
+            shutil.copy2(str(webcams),
+                         str(self.meeting.source_dir / 'download'))
 
     def copy_mp4(self):
-        if os.path.exists(self.meeting.result_file):
-            shutil.copy2(self.meeting.result_file,
-                         self.meeting.source_dir / (meetingId + '.mp4'))
+        if self.meeting.result_file.exists():
+            shutil.copy2(str(self.meeting.result_file),
+                         str(self.meeting.source_dir / (meetingId + '.mp4')))
 
     def zipdir(self):
         filename = str(self.meeting.source_dir / (meetingId + '.zip'))
