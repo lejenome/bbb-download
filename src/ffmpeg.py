@@ -13,11 +13,11 @@ logfile = None
 
 def set_logfile(file):
     global logfile
-    logfile = file
+    logfile = str(file)
 
 
 def ffmpeg(command):
-    command = '%s -hide_banner -nostats %s' % (FFMPEG, command)
+    command = '%s -y -hide_banner -nostats %s' % (FFMPEG, command)
     fn_name = inspect.stack()[1].function
     print("[CMD:%s] %s" % (fn_name, command), file=sys.stderr)
     if logfile:
@@ -35,15 +35,15 @@ def extract_audio_from_video(video_file, out_file):
 
 
 def create_video_from_image(image, duration, out_file):
-    print("*************** create_video_from_image ******************")
-    print(image, "\n", duration, "\n", out_file)
+    print("*************** create_video_from_image ******************", file=sys.stderr)
+    print(image, "\n", duration, "\n", out_file, file=sys.stderr)
     ffmpeg(
-        '-y -loop 1 -r 5 -f image2 -i %s -c:v %s -tune stillimage -t %s -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" %s'
+        '-loop 1 -r 5 -f image2 -i %s -c:v %s -tune stillimage -t %s -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" %s'
         % (image, VID_ENCODER, duration, out_file))
 
 
 def concat_videos(video_list, out_file):
-    ffmpeg('-y -f concat -safe 0 -i %s -c copy %s' % (video_list, out_file))
+    ffmpeg('-f concat -safe 0 -i %s -c copy %s' % (video_list, out_file))
 
 
 def mp4_to_ts(input, output):
@@ -86,12 +86,15 @@ def trim_video_by_seconds(video_file, start, end, out_file):
 
 def trim_audio(audio_file, start, end, out_file):
     temp_file = 'temp.mp3'
-    start_h = start / 3600
-    start_m = start / 60 - start_h * 60
+    start = int(start)
+    end = int(end)
+
+    start_h = start // 3600
+    start_m = start // 60 - start_h * 60
     start_s = start % 60
 
-    end_h = end / 3600
-    end_m = end / 60 - end_h * 60
+    end_h = end // 3600
+    end_m = end // 60 - end_h * 60
     end_s = end % 60
 
     str1 = '%d:%d:%d' % (start_h, start_m, start_s)
@@ -103,15 +106,15 @@ def trim_audio(audio_file, start, end, out_file):
 
 
 def trim_audio_start(time, length, full_audio, audio_trimmed):
-    trim_audio(full_audio, time, int(length), audio_trimmed)
+    trim_audio(full_audio, time, length, audio_trimmed)
 
 
 def mp3_to_aac(mp3_file, aac_file):
-    ffmpeg('-y -i %s -c:a aac %s' % (mp3_file, aac_file))
+    ffmpeg('-i %s -c:a aac %s' % (mp3_file, aac_file))
 
 
 def webm_to_mp4(webm_file, mp4_file):
-    ffmpeg('-y -i %s -qscale 0 %s' % (webm_file, mp4_file))
+    ffmpeg('-i %s -qscale 0 %s' % (webm_file, mp4_file))
 
 
 def audio_to_video(audio_file, image_file, video_file):

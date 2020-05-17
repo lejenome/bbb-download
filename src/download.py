@@ -13,7 +13,6 @@ from operator import itemgetter
 
 PRESENTATION_PATH = '/var/bigbluebutton/published/presentation/'
 RAW_PATH = '/var/bigbluebutton/recording/raw/'
-DOWNLOAD_PATH = '/var/log/bigbluebutton/download/'
 
 
 class Meeting:
@@ -28,13 +27,12 @@ class Meeting:
 
         presentation_path = Path(PRESENTATION_PATH)
         raw_path = Path(RAW_PATH)
-        download_path = Path(DOWNLOAD_PATH)
 
         self.source_dir = presentation_path / self.meetingId
         self.temp_dir = self.source_dir / 'temp'
         self.target_dir = self.source_dir / 'download'
         self.events_file = self.source_dir / 'shapes.svg'
-        self.log_file = download_path / (self.meetingId + '.log')
+        self.log_file = self.target_dir / (self.meetingId + '.log')
         self.source_events = raw_path / self.meetingId / 'events.xml'
         self.deskshare_src_file = self.source_dir / 'deskshare' / 'deskshare.webm'
         self.deskshare_tmp_file = self.temp_dir / 'deskshare.mp4'
@@ -45,16 +43,8 @@ class Meeting:
         self.result_file = self.target_dir / 'meeting.mp4'
         self.slideshow_file = self.temp_dir / 'slideshow.mp4'
 
-        self.bbb_version = self.get_bbbversion()
+        # self.bbb_version = self.get_bbbversion()
         self.process_slides()
-        self.apply()
-
-    def apply(self):
-        sys.stderr = self.log_file.open('a')
-        print("\n<-------------------" + time.strftime("%c") +
-              "----------------------->\n",
-              file=sys.stderr)
-        print("bbb_version: " + self.bbb_version, file=sys.stderr)
 
     def get_bbbversion(self):
         s_events = minidom.parse(str(self.source_events))
@@ -97,21 +87,22 @@ class MeetingConverter:
         self.meeting = meeting
 
     def start(self):
-        ffmpeg.set_logfile(str(self.meeting.log_file))
         os.chdir(str(self.meeting.source_dir))
         self.prepare()
         self.create_slideshow()
-        if not self.meeting.audio_trimmed.exists():
-            ffmpeg.trim_audio_start(self.meeting.slides[0]['in'],
-                                    self.meeting.total_length,
-                                    self.meeting.audio_file,
-                                    self.meeting.audio_trimmed)
+        ffmpeg.trim_audio_start(self.meeting.slides[0]['in'],
+                                self.meeting.total_length,
+                                self.meeting.audio_file,
+                                self.meeting.audio_trimmed)
         ffmpeg.mux_slideshow_audio(self.meeting.slideshow_file,
                                    self.meeting.audio_trimmed,
                                    self.meeting.result_file)
         self.serve_webcams()
         # self.zipdir()
         self.copy_mp4()
+        print("\n<------------------- ENDED [" + time.strftime("%c") +
+              "] ----------------------->\n",
+              file=sys.stderr)
 
     def clean(self, clean_all=False):
         print("Cleaning up temp files...", file=sys.stderr)
@@ -170,6 +161,13 @@ class MeetingConverter:
         self.rescale_presentation(height, width)
 
     def prepare(self):
+        self.meeting.log_file.parent.mkdir(parents=True, exist_ok=True)
+        sys.stderr = self.meeting.log_file.open('a')
+        ffmpeg.set_logfile(self.meeting.log_file.with_name('ffmpeg'))
+        print("\n<------------------- STARTING [" + time.strftime("%c") +
+              "] ----------------------->\n",
+              file=sys.stderr)
+
         self.meeting.target_dir.mkdir(parents=True, exist_ok=True)
         self.meeting.temp_dir.mkdir(parents=True, exist_ok=True)
         self.meeting.audio_file.parent.mkdir(parents=True, exist_ok=True)
