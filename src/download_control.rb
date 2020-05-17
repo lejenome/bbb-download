@@ -2,6 +2,9 @@
 # encoding: UTF-8
 
 require "trollop"
+require 'net/http'
+require "jwt"
+require "java_properties"
 require File.expand_path('../../../lib/recordandplayback', __FILE__)
 
 logger = Logger.new("/var/log/bigbluebutton/post_publish.log", 'weekly' )
