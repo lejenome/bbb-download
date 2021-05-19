@@ -17,7 +17,8 @@ def set_logfile(file):
 
 
 def ffmpeg(command):
-    command = '%s -y -hide_banner -nostats %s' % (FFMPEG, command)
+    command = '%s -y -v info -hide_banner -nostdin -nostats ' \
+        '-strict experimental -threads 0 %s' % (FFMPEG, command)
     fn_name = inspect.stack()[1].function
     print("[CMD:%s] %s" % (fn_name, command), file=sys.stderr)
     if logfile:

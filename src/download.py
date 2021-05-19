@@ -163,7 +163,7 @@ class MeetingConverter:
     def prepare(self):
         self.meeting.log_file.parent.mkdir(parents=True, exist_ok=True)
         sys.stderr = self.meeting.log_file.open('a')
-        ffmpeg.set_logfile(self.meeting.log_file.with_name('ffmpeg'))
+        ffmpeg.set_logfile(self.meeting.log_file.with_name('ffmpeg.log'))
         print("\n<------------------- STARTING [" + time.strftime("%c") +
               "] ----------------------->\n",
               file=sys.stderr)
